@@ -218,7 +218,7 @@ runJavaScript sendBatch entryPoint = do
                 logInfo (\x -> "Sync " <> x <> show (length cmds, last cmds))
                 _ <- tryTakeMVar lastAsyncBatch
                 putMVar lastAsyncBatch batch
-                sendBatch batch
+                void $ forkIO $ sendBatch batch
                 takeResult recvMVar nBatch >>= \case
                     (n, _) | n /= nBatch -> error $ "Unexpected jsaddle results (expected batch " <> show nBatch <> ", got batch " <> show n <> ")"
                     (_, Success callbacksToFree results)
